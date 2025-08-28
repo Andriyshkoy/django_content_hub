@@ -1,28 +1,28 @@
 .PHONY: up down logs build shell migrate superuser makemigrations test
 
 up:
-    docker compose up -d --build
+	docker compose up -d --build
 
 down:
-    docker compose down -v
+	docker compose down -v
 
 logs:
-    docker compose logs -f --tail=200
+	docker compose logs -f --tail=200
 
 build:
-    docker compose build web
+	docker compose build web
 
 shell:
-    docker compose exec web python manage.py shell
+	docker compose exec web python manage.py shell
 
 migrate:
-    docker compose exec web python manage.py migrate
+	docker compose exec web python manage.py migrate
 
 makemigrations:
-    docker compose exec web python manage.py makemigrations
+	docker compose exec web python manage.py makemigrations
 
 superuser:
-    docker compose exec web python manage.py createsuperuser
+	docker compose exec web python manage.py createsuperuser
 
 test:
-    docker compose exec web python manage.py test -v 2
+	docker compose exec web pytest -v

@@ -1,7 +1,7 @@
 # ContentHub
 
-Быстрый каркас для тестового проекта на **Django + DRF** с Docker Compose (Postgres + Redis), 
-преднастроенными `settings`, `pre-commit`, `Makefile` и Health-check endpoint.
+Быстрый каркас для тестового проекта на **Django + DRF** с Docker Compose (Postgres + Redis),
+фоновой обработкой задач через **Celery**, преднастроенными `settings`, `pre-commit`, `Makefile` и Health-check endpoint.
 
 ## Быстрый старт (Docker)
 
@@ -23,9 +23,9 @@ docker compose exec web python manage.py createsuperuser
 - Админка: http://localhost:8000/admin/
 
 ## Структура
-- `compose.yaml` — Docker Compose (web, db, redis)
+- `compose.yaml` — Docker Compose (web, worker, db, redis)
 - `Dockerfile` — образ приложения
-- `requirements.txt` — зависимости (Django, DRF, django-environ, django-cors-headers, psycopg2-binary)
+- `requirements.txt` — зависимости (Django, DRF, Celery и пр.)
 - `config/` — Django-проект
   - `settings.py` — чтение `.env`, Postgres/Redis, DRF-пагинация
   - `urls.py` — админка и `/health/`
@@ -41,4 +41,11 @@ make down        # остановить и удалить
 make migrate     # миграции
 make superuser   # создать суперпользователя
 make shell       # Django shell
+make test        # запустить pytest
 ```
+
+## API
+
+- `GET /api/pages/` — список страниц с пагинацией.
+- `GET /api/pages/{id}/` — детальная информация о странице с вложенным контентом. При обращении счётчики
+  просмотров привязанных объектов увеличиваются в отдельной Celery-задаче.
