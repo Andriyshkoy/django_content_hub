@@ -26,10 +26,10 @@ class PageViewSet(viewsets.ReadOnlyModelViewSet):
 
     def retrieve(self, request, *args, **kwargs):
         page: Page = self.get_object()
-        content_map: dict[str, list[int]] = defaultdict(list)
+        content_map: dict[str, set[int]] = defaultdict(set)
         for pc in page.contents.all():
             label = f"{pc.content_type.app_label}.{pc.content_type.model}"
-            content_map[label].append(pc.object_id)
+            content_map[label].add(pc.object_id)
         for label, ids in content_map.items():
-            increment_counters.delay(label, ids)
+            increment_counters.delay(label, list(ids))
         return Response(self.get_serializer(page).data)

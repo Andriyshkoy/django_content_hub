@@ -8,6 +8,7 @@ env = environ.Env(
     DJANGO_DEBUG=(bool, False),
     DJANGO_ALLOWED_HOSTS=(str, "localhost,127.0.0.1"),
     DJANGO_TIME_ZONE=(str, "Asia/Almaty"),
+    USE_POSTGRES=(bool, False),
 )
 environ.Env.read_env(os.path.join(BASE_DIR, ".env"))
 
@@ -59,7 +60,9 @@ TEMPLATES = [
 WSGI_APPLICATION = "config.wsgi.application"
 ASGI_APPLICATION = "config.asgi.application"
 
-if env("POSTGRES_DB", default=None):
+RUNNING_TESTS = bool(os.environ.get("PYTEST_CURRENT_TEST"))
+
+if env("USE_POSTGRES"):
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.postgresql",
@@ -111,3 +114,6 @@ CORS_ALLOW_ALL_ORIGINS = True
 # Celery
 CELERY_BROKER_URL = env("CELERY_BROKER_URL", default="redis://redis:6379/0")
 CELERY_RESULT_BACKEND = env("CELERY_RESULT_BACKEND", default="redis://redis:6379/0")
+# Run tasks synchronously during tests to avoid external broker
+if RUNNING_TESTS:
+    CELERY_TASK_ALWAYS_EAGER = True
