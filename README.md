@@ -57,6 +57,12 @@
     - audio: `id`, `type="audio"`, `title`, `counter`, `text`.
 - `GET /health/` — health‑check (`{"status":"ok"}`).
 
+Документация OpenAPI (drf-spectacular):
+
+- Схема: `GET /api/schema/` (JSON/YAML)
+- Swagger UI: `GET /api/docs/`
+- ReDoc: `GET /api/redoc/`
+
 Примечание: при открытии `detail` эндпоинта инкременты просмотров контента откладываются в Celery и не блокируют ответ API.
 
 ## 5) Счетчики просмотров (Redis + Celery)

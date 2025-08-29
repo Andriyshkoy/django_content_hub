@@ -25,6 +25,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "rest_framework",
+    "drf_spectacular",
     "corsheaders",
     "pages",
 ]
@@ -112,10 +113,16 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 REST_FRAMEWORK = {
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
     "PAGE_SIZE": 10,
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 }
 
-# CORS (dev-friendly)
-CORS_ALLOW_ALL_ORIGINS = True
+# drf-spectacular
+SPECTACULAR_SETTINGS = {
+    "TITLE": "Content Hub API",
+    "DESCRIPTION": "Автогенерируемая документация OpenAPI для API контент-хаба.",
+    "VERSION": "1.0.0",
+    # Keep minimal; customize as needed (auth, servers, etc.)
+}
 
 # Celery
 CELERY_BROKER_URL = env("CELERY_BROKER_URL", default="redis://redis:6379/0")
