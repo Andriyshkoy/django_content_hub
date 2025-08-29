@@ -4,7 +4,7 @@ from django.db import models
 
 
 class Page(models.Model):
-    title = models.CharField(max_length=255)
+    title = models.CharField(max_length=255, db_index=True)
 
     def __str__(self) -> str:
         return self.title
@@ -14,7 +14,7 @@ class Page(models.Model):
 
 
 class ContentBase(models.Model):
-    title = models.CharField(max_length=255)
+    title = models.CharField(max_length=255, db_index=True)
     counter = models.PositiveIntegerField(default=0)
 
     class Meta:
@@ -42,6 +42,9 @@ class PageContent(models.Model):
 
     class Meta:
         ordering = ["position", "id"]
+        indexes = [
+            models.Index(fields=["page", "position", "id"]),
+        ]
 
     def __str__(self) -> str:
         return f"{self.page} -> {self.content_object}"
