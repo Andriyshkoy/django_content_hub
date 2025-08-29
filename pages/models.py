@@ -38,13 +38,9 @@ class PageContent(models.Model):
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey("content_type", "object_id")
-    position = models.PositiveIntegerField(default=0)
 
     class Meta:
-        ordering = ["position", "id"]
-        indexes = [
-            models.Index(fields=["page", "position", "id"]),
-        ]
+        ordering = ["id"]
 
     def __str__(self) -> str:
         return f"{self.page} -> {self.content_object}"

@@ -52,7 +52,7 @@ class PageContentInlineForm(forms.ModelForm):
 
     class Meta:
         model = PageContent
-        fields = ("position",)  # content_type/object_id derived
+        fields = ()  # content_type/object_id derived via content_item
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

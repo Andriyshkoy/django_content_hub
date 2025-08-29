@@ -28,12 +28,8 @@ def test_page_detail_returns_contents_and_increments_counters():
     audio = AudioContent.objects.create(title="A", text="hello")
     ct_video = ContentType.objects.get_for_model(VideoContent)
     ct_audio = ContentType.objects.get_for_model(AudioContent)
-    PageContent.objects.create(
-        page=page, content_type=ct_video, object_id=video.id, position=1
-    )
-    PageContent.objects.create(
-        page=page, content_type=ct_audio, object_id=audio.id, position=2
-    )
+    PageContent.objects.create(page=page, content_type=ct_video, object_id=video.id)
+    PageContent.objects.create(page=page, content_type=ct_audio, object_id=audio.id)
 
     client = APIClient()
     url = reverse("page-detail", args=[page.id])

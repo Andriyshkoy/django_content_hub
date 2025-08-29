@@ -10,8 +10,8 @@ class PageContentInline(admin.TabularInline):
     model = PageContent
     extra = 1
     form = PageContentInlineForm
-    fields = ("content_item", "position")
-    ordering = ("position",)
+    fields = ("content_item",)
+    ordering = ("id",)
 
 
 @admin.register(Page)

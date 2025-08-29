@@ -14,7 +14,7 @@ class PageViewSet(viewsets.ReadOnlyModelViewSet):
         Prefetch(
             "contents",
             queryset=PageContent.objects.select_related("content_type")
-            .order_by("position", "id")
+            .order_by("id")
             .prefetch_related("content_object"),
         )
     )
