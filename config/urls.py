@@ -10,5 +10,6 @@ def health(_request):
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("health/", health, name="health"),
-    path("api/", include("pages.urls")),
+    # Versioned API (v1)
+    path("api/v1/", include("pages.urls")),
 ]
