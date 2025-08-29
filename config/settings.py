@@ -17,6 +17,12 @@ SECRET_KEY = env("DJANGO_SECRET_KEY", default="dev-secret-change-me")
 DEBUG = env("DJANGO_DEBUG")
 ALLOWED_HOSTS = [h.strip() for h in env("DJANGO_ALLOWED_HOSTS").split(",")]
 
+CSRF_TRUSTED_ORIGINS = [
+    o.strip()
+    for o in env("DJANGO_CSRF_TRUSTED_ORIGINS", default="").split(",")
+    if o.strip()
+]
+
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
