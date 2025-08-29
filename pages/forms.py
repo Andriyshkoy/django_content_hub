@@ -9,13 +9,14 @@ from .models import ContentBase, PageContent
 
 
 def get_allowed_content_models():
-    """Return a list of models allowed for PageContent.content_object.
+    """Return a list of models allowed for ``PageContent.content_object``.
 
     Priority:
-    - If settings.PAGES_ALLOWED_CONTENT_MODELS is defined (list of
-      "app_label.ModelName"), use it.
-    - Otherwise, auto-discover concrete subclasses of ContentBase in the
-      "pages" app (extensible: any subclass will be picked up automatically).
+    - If ``settings.PAGES_ALLOWED_CONTENT_MODELS`` is defined (list of
+      ``"app_label.ModelName"``), use it.
+    - Otherwise, auto‑discover all non‑abstract subclasses of ``ContentBase``
+      among installed apps (extensible: any subclass will be picked up
+      automatically).
     """
 
     labels = getattr(settings, "PAGES_ALLOWED_CONTENT_MODELS", None)

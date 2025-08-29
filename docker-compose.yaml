@@ -57,13 +57,22 @@ services:
   worker:
     build: .
     container_name: contenthub_worker
-    command: celery -A config worker -l info
+    command: celery -A config worker -l info -Q celery,batch
     env_file: .env
     depends_on:
       db:
         condition: service_healthy
       redis:
         condition: service_healthy
+    restart: unless-stopped
+
+  beat:
+    build: .
+    container_name: contenthub_beat
+    command: celery -A config beat -l info
+    env_file: .env
+    depends_on:
+      - redis
     restart: unless-stopped
 
 volumes:

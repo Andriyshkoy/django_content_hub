@@ -6,10 +6,21 @@ from rest_framework.response import Response
 
 from .models import Page, PageContent
 from .serializers import PageDetailSerializer, PageListSerializer
-from .tasks import increment_counters
+from .tasks import ingest_impressions
 
 
 class PageViewSet(viewsets.ReadOnlyModelViewSet):
+    """Read-only API for pages.
+
+    Notes:
+    - Uses ``Prefetch`` on the generic relation container; the underlying
+      ``GenericForeignKey`` cannot be fully prefetch-optimized by DRF/Django
+      out of the box. For large datasets consider model-specific joins or
+      explicit relations.
+    - On retrieve, impressions are aggregated asynchronously via Celery to
+      avoid adding latency to the API response.
+    """
+
     queryset = Page.objects.all().prefetch_related(
         Prefetch(
             "contents",
@@ -31,5 +42,5 @@ class PageViewSet(viewsets.ReadOnlyModelViewSet):
             label = f"{pc.content_type.app_label}.{pc.content_type.model}"
             content_map[label].add(pc.object_id)
         for label, ids in content_map.items():
-            increment_counters.delay(label, list(ids))
+            ingest_impressions.delay(label, list(ids))
         return Response(self.get_serializer(page).data)

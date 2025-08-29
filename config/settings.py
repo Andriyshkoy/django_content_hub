@@ -1,4 +1,5 @@
 import os
+import sys
 from pathlib import Path
 
 import environ
@@ -60,9 +61,14 @@ TEMPLATES = [
 WSGI_APPLICATION = "config.wsgi.application"
 ASGI_APPLICATION = "config.asgi.application"
 
-RUNNING_TESTS = bool(os.environ.get("PYTEST_CURRENT_TEST"))
+# Detect test runs early and reliably for pytest and Django test runner
+RUNNING_TESTS = bool(os.environ.get("PYTEST_CURRENT_TEST")) or (
+    "pytest" in " ".join(sys.argv).lower() or "test" in sys.argv
+)
 
-if env("USE_POSTGRES"):
+# Use Postgres in normal runtime when requested via env;
+# force SQLite during tests to avoid external dependencies.
+if env("USE_POSTGRES") and not RUNNING_TESTS:
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.postgresql",
@@ -114,6 +120,31 @@ CORS_ALLOW_ALL_ORIGINS = True
 # Celery
 CELERY_BROKER_URL = env("CELERY_BROKER_URL", default="redis://redis:6379/0")
 CELERY_RESULT_BACKEND = env("CELERY_RESULT_BACKEND", default="redis://redis:6379/0")
+
+# Dedicated Redis for counters buffer (separate DB by default)
+COUNTER_REDIS_URL = env("COUNTER_REDIS_URL", default="redis://redis:6379/1")
+COUNTER_DEDUP_TTL = env.int("COUNTER_DEDUP_TTL", default=900)
+
+# Celery reliability and beat config
+CELERY_TASK_ACKS_LATE = True
+CELERY_TASK_REJECT_ON_WORKER_LOST = True
+CELERY_TASK_PUBLISH_RETRY = True
+CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
+CELERY_BEAT_SCHEDULE = {
+    "flush-impressions": {
+        "task": "pages.tasks.flush_impressions",
+        "schedule": 1.0,
+        "options": {"queue": "batch"},
+    }
+}
+
 # Run tasks synchronously during tests to avoid external broker
 if RUNNING_TESTS:
     CELERY_TASK_ALWAYS_EAGER = True
+    # Ensure local, dependency-free DB while running tests
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
+        }
+    }
